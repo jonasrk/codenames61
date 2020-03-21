@@ -1,33 +1,14 @@
 swagger: '2.0'
 info:
-  description: |
-    This is a simple server for the game codenames.  You can find 
-    out more about Swagger at 
-    [http://swagger.io](http://swagger.io) or on 
-    [irc.freenode.net, #swagger](http://swagger.io/irc/).
   version: 1.0.0
   title: Codenames Game
-  termsOfService: http://swagger.io/terms/
-  contact:
-    email: jonas.kemper.biz@gmail.com
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
 # host: boardstore.swagger.io
 # basePath: /v2
-tags:
-- name: board
-  description: Codenames Board
-  externalDocs:
-    description: Find out more
-    url: http://swagger.io
 # schemes:
 # - http
 paths:
   /board:
     post:
-      tags:
-      - board
       summary: Add a new board
       operationId: addboard
       consumes:
@@ -44,35 +25,13 @@ paths:
       responses:
         405:
           description: Invalid input
-    put:
-      tags:
-      - board
-      summary: Update an existing board
-      operationId: updateboard
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: body
-        description: board object that needs to be added to the store
-        required: true
-        schema:
-          $ref: '#/definitions/board'
-      responses:
-        400:
-          description: Invalid ID supplied
   /board/{boardId}:
     get:
-      tags:
-      - board
       summary: Find board by ID
       description: Returns a single board
       operationId: getboardById
       produces:
       - application/json
-      - application/xml
       parameters:
       - name: boardId
         in: path
@@ -89,11 +48,7 @@ paths:
           description: Invalid ID supplied
         404:
           description: board not found
-      security:
-      - api_key: []
     post:
-      tags:
-      - board
       summary: Updates a board in the store with form data
       operationId: updateboardWithForm
       consumes:
@@ -120,18 +75,6 @@ paths:
       responses:
         405:
           description: Invalid input
-securityDefinitions:
-  boardstore_auth:
-    type: oauth2
-    authorizationUrl: http://boardstore.swagger.io/oauth/dialog
-    flow: implicit
-    scopes:
-      write:boards: modify boards in your account
-      read:boards: read your boards
-  api_key:
-    type: apiKey
-    name: api_key
-    in: header
 definitions:
   Category:
     type: object
@@ -162,8 +105,6 @@ definitions:
       id:
         type: integer
         format: int64
-      category:
-        $ref: '#/definitions/Category'
       name:
         type: string
         example: doggie
@@ -174,13 +115,6 @@ definitions:
           wrapped: true
         items:
           type: string
-      tags:
-        type: array
-        xml:
-          name: tag
-          wrapped: true
-        items:
-          $ref: '#/definitions/Tag'
       status:
         type: string
         description: board status in the store
@@ -191,7 +125,9 @@ definitions:
     xml:
       name: board
 host: virtserver.swaggerhub.com
-basePath: /codenames-dev/codenames-dev/1.0.0
+# basePath: /codenames-dev/codenames-dev/1.0.0
 schemes:
  - https
  - http
+# Added by API Auto Mocking Plugin
+basePath: /codenames-dev/codenames61-api/1.0.0
