@@ -2,40 +2,27 @@ swagger: '2.0'
 info:
   version: 1.0.0
   title: Codenames Game
-# host: boardstore.swagger.io
-# basePath: /v2
-# schemes:
-# - http
+  description: This is the definition for an extremely simple API for the a client/server based game of codenames. The game state lives in the backend. A frontend can retrieve the ID of a new game, can request the state of a game by ID and can update the state of a game by ID.
 paths:
-  /board:
-    post:
-      summary: Add a new board
-      operationId: addboard
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: body
-        description: board object that needs to be added to the store
-        required: true
-        schema:
-          $ref: '#/definitions/board'
-      responses:
-        405:
-          description: Invalid input
-  /board/{boardId}:
+  /game/new:
     get:
-      summary: Find board by ID
-      description: Returns a single board
-      operationId: getboardById
+      summary: Create a new game.
+      produces:
+      - application/json
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/gameId'
+      description: Triggers the creation of a new game in the backend and retrieves a unique ID of this new game.
+  /game/{gameId}:
+    get:
       produces:
       - application/json
       parameters:
-      - name: boardId
+      - name: gameId
         in: path
-        description: ID of board to return
+        description: ID of game to return
         required: true
         type: integer
         format: int64
@@ -43,89 +30,72 @@ paths:
         200:
           description: successful operation
           schema:
-            $ref: '#/definitions/board'
+            $ref: '#/definitions/game'
         400:
           description: Invalid ID supplied
-        404:
-          description: board not found
-    post:
-      summary: Updates a board in the store with form data
-      operationId: updateboardWithForm
+      summary: Retrieve complete state of an existing game.
+    put:
+      summary: Updates the state of an existing game.
       consumes:
-      - application/x-www-form-urlencoded
+      - application/json
       produces:
       - application/json
       parameters:
-      - name: boardId
+      - name: gameId
         in: path
-        description: ID of board that needs to be updated
+        description: ID of game that needs to be updated
         required: true
         type: integer
         format: int64
-      - name: name
-        in: formData
-        description: Updated name of the board
-        required: false
-        type: string
-      - name: status
-        in: formData
-        description: Updated status of the board
-        required: false
-        type: string
       responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/game'
         405:
           description: Invalid input
+      description: Update the state of an existing game by providing the complete (new) state of the game.
 definitions:
-  Category:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-      name:
-        type: string
-    xml:
-      name: Category
-  Tag:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-      name:
-        type: string
-    xml:
-      name: Tag
-  board:
+  game:
     type: object
     required:
-    - name
-    - photoUrls
+    - word_matrix
+    - color_matrix
+    - hidden_matrix
     properties:
-      id:
-        type: integer
-        format: int64
-      name:
-        type: string
-        example: doggie
-      photoUrls:
+      word_matrix:
         type: array
-        xml:
-          name: photoUrl
-          wrapped: true
         items:
-          type: string
-      status:
-        type: string
-        description: board status in the store
-        enum:
-        - available
-        - pending
-        - sold
-    xml:
-      name: board
+          $ref: "#/definitions/row"
+        example: [["word", "word", "word", "word", "word"], ["word", "word", "word", "word", "word"], ["word", "word", "word", "word", "word"], ["word", "word", "word", "word", "word"], ["word", "word", "word", "word", "word"]]
+      color_matrix:
+        type: array
+        items:
+          $ref: "#/definitions/row"
+        example: [["2", "2", "3", "2", "1"], ["2", "1", "1", "2", "1"], ["2", "1", "1", "0", "1"], ["0", "0", "2", "0", "1"], ["0", "0", "2", "0", "1"]]
+      hidden_matrix:
+        type: array
+        items:
+          $ref: "#/definitions/row"
+        example: [["0", "0", "0", "0", "0"], ["0", "0", "1", "0", "0"], ["0", "1", "0", "0", "0"], ["0", "0", "0", "0", "0"], ["0", "0", "0", "0", "0"]]
+    description: |-
+      This data structure describes the complete state of a game of codenames. A complete game of codenames consists of three arrays. Each array containts of five rows. Each row consists of five strings.
+
+      This results in three matrices consisting of 25 strings each.
+
+      The first matrix consists of the 25 __words__ of the game.
+      The second matrix consists of the 25 __colors__ of the words.
+      The third matrix consists of the 25 __visibilities__ of the game.          
+  row:
+    type: array
+    items:
+      type: string
+    example: ["0", "0", "0", "1", "0"]
+    description: This is one row of five strings.
+  gameId:
+    type: integer
+    format: int64
 host: virtserver.swaggerhub.com
-# basePath: /codenames-dev/codenames-dev/1.0.0
 schemes:
  - https
  - http
